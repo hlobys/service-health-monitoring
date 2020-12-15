@@ -1,0 +1,6 @@
+export const CHOOSE_CATALOG = 'CHOOSE_CATALOG';
+export const LOAD_DICTIONARY = 'LOAD_DICTIONARY';
+export const LOAD_CATALOG_NAMES = 'LOAD_CATALOG_NAMES';
+export const CHANGE_PAGE = 'CHANGE_PAGE';
+export const CREATE_NEW_CATALOG = 'CREATE_NEW_CATALOG';
+export const DEFAULT_CATALOG_NAME = 'Choose catalog name';

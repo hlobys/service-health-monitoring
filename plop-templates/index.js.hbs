@@ -1,0 +1,17 @@
+import * as React from 'react';
+
+const projectName = '{{name}}';
+
+const Root = () => <div>{projectName}</div>
+
+window.tarantool_enterprise_core.register(
+  projectName,
+  [
+    {
+      label: '{{name}}',
+      path: '{{name}}',
+    }
+  ],
+  Root,
+  'react'
+);
