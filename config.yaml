@@ -1,0 +1,5 @@
+services:
+  - name: service1
+    url: http://localhost:8081
+  - name: service2
+    url: http://localhost:8082

@@ -2,16 +2,24 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Service struct {
 	Name   string
 	URL    string
 	Status bool
+}
+
+type Config struct {
+	Services []Service `yaml:"services"`
 }
 
 type MonitoringService struct {
@@ -54,11 +62,43 @@ func (m *MonitoringService) ExportMetrics(w http.ResponseWriter, r *http.Request
 	}
 }
 
+func LoadConfigFromFile(filename string) (*Config, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var config Config
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config, nil
+}
+
 func main() {
 	monitoring := &MonitoringService{}
 
 	monitoring.AddService("service1", "http://localhost:8081")
 	monitoring.AddService("service2", "http://localhost:8082")
+
+	configFile := os.Getenv("CONFIG_FILE")
+	var config *Config
+	var err error
+
+	if configFile != "" {
+		// Load services from YAML file
+		config, err = LoadConfigFromFile(configFile)
+		if err != nil {
+			log.Fatalf("Error loading config from file: %v", err)
+		}
+		log.Println("Loaded services from file")
+	}
+
+	for _, service := range config.Services {
+		monitoring.AddService(service.Name, service.URL)
+	}
 
 	go func() {
 		for {

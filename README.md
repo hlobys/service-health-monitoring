@@ -29,10 +29,26 @@ go mod tidy
 ```
 
 
+## Configuration via config.yaml
+You can configure the services to monitor by using a YAML file. This method allows you to easily manage multiple services without modifying the source code. The `config.yaml` file defines the services and their health-check URLs in a simple, human-readable format.
+
+Example `config.yaml`
+
+
+```
+services:
+  - name: service1
+    url: http://localhost:8081
+  - name: service2
+    url: http://localhost:8
+```
+
+
 ## Run the service:
 
 
 ```
+export CONFIG_FILE=config.yaml
 go run main.go
 ```
 
