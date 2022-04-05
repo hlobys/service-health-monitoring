@@ -44,6 +44,25 @@ services:
 ```
 
 
+## Slack Alerts
+The Service Health Monitoring tool now supports sending alerts to Slack channels via Slack's incoming webhooks.
+
+### How to Set Up Slack Alerts
+1. Create an Incoming Webhook:
+
+- Go to the Slack API Incoming Webhooks page and create a new webhook for your workspace.
+- Choose the channel where you want to post the alerts and copy the provided webhook URL.
+
+2. Set the Webhook URL:
+
+- Set the SLACK_WEBHOOK_URL environment variable to the webhook URL you copied:
+
+
+```
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/your/webhook/url"
+```
+
+
 ## Run the service:
 
 
