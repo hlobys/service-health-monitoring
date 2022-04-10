@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v2"
+
+	"service-health-monitoring/alerts"
 )
 
 type Service struct {
@@ -40,11 +42,29 @@ func (m *MonitoringService) CheckServices() {
 	for _, service := range m.services {
 		resp, err := http.Get(service.URL + "/health")
 		if err != nil || resp.StatusCode != http.StatusOK {
-			log.Printf("Service %s is DOWN!\n", service.Name)
-			service.Status = false
+			if service.Status { // If the service was previously up, send a down alert
+				log.Printf("Service %s is DOWN! Sending Slack alert...\n", service.Name)
+				message := fmt.Sprintf(":x: *Service Down*: The service %s is currently DOWN. URL: %s", service.Name, service.URL)
+				err = alerts.SendSlackAlert(message)
+				if err != nil {
+					log.Printf("Failed to send Slack alert: %v", err)
+				}
+				service.Status = false
+			} else {
+				log.Printf("Service %s is DOWN!\n", service.Name)
+			}
 		} else {
-			log.Printf("Service %s is UP!\n", service.Name)
-			service.Status = true
+			if !service.Status { // If the service was previously down, send an up alert
+				log.Printf("Service %s is UP! Sending recovery Slack alert...\n", service.Name)
+				message := fmt.Sprintf(":white_check_mark: *Service Recovered*: The service %s is now UP. URL: %s", service.Name, service.URL)
+				err = alerts.SendSlackAlert(message)
+				if err != nil {
+					log.Printf("Failed to send recovery Slack alert: %v", err)
+				}
+				service.Status = true
+			} else {
+				log.Printf("Service %s is UP!\n", service.Name)
+			}
 		}
 	}
 }
